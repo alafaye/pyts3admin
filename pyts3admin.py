@@ -76,7 +76,7 @@ class AdminSession(object):
         return self.ts.command('banlist')
 
     def ban_add_rule(self, ip=None, name=None, client_UID=None,
-                    reason='For reasons', time=600):
+                     reason='For reasons', time=600):
         r"""
         Method to add rules to ban clients
 
@@ -116,7 +116,7 @@ class AdminSession(object):
 
         params.update({'banreason': reason, 'time': time})
 
-        return self.ts.command('banadd', params)
+        return self.ts.command('banadd', **params)
 
     def ban_client(self, client_id=None, time=3600, reason='For reasons'):
         r"""
@@ -131,11 +131,11 @@ class AdminSession(object):
         """
         params = {'clid': str(client_id), 'time': str(time),
                   'banreason': reason}
-        return self.ts.command('banclient', params)
+        return self.ts.command('banclient', **params)
 
     # Chan part
 
-    def channel_create(self, chan_name=None, **kwargs):
+    def channel_create(self, chan_name=None, permanent=False, **kwargs):
         r"""
         Method to create channels
 
@@ -150,7 +150,9 @@ class AdminSession(object):
 
         params = {'channel_name': chan_name}
         params.update(kwargs)
-        return self.ts.command('channelcreate', params)
+        if permanent:
+            params.update({'channel_flag_permanent': 1})
+        return self.ts.command('channelcreate', **params)
 
     def channel_delete(self, chan_name, force=False):
         r"""
@@ -168,8 +170,9 @@ class AdminSession(object):
         else:
             force = 0
 
-        params = {'channel_name': chan_name, 'force': force}
-        return self.ts.command('channeldelete', params)
+        params = {'cid': chan_name, 'force': force}
+        print(params)
+        return self.ts.command('channeldelete', **params)
 
     def channel_edit(self, channel_id, **kwargs):
 
@@ -177,10 +180,28 @@ class AdminSession(object):
         params.update(kwargs)
         return self.ts.command('channeledit', kwargs)
 
+    def channel_list(self, *args):
+        r"""
+        Output a list of channels from the server
+
+        Parameters
+        ----------
+        *args : topic
+                flags
+                voice
+                limits
+                icon
+                secondsempty
+            All those must be passed as strings
+            e.g. : ts.client_list('topic', 'flags')
+        """
+
+        return self.ts.command('channellist', *args)
+
     def channel_move(self, channel_id, parent_channel_id, order=0):
 
         params = {'cid': channel_id, 'cpid': parent_channel_id, 'order': order}
-        return self.ts.command('channelmove', params)
+        return self.ts.command('channelmove', **params)
 
     def channel_find(self, pattern):
 
@@ -188,7 +209,6 @@ class AdminSession(object):
 
     def choose_virtual_server(self, server_id):
         cmd = 'use ' + str(server_id)
-        print(cmd)
         return self.ts.command(cmd)
 
     def stop_server(self):
@@ -217,18 +237,18 @@ class AdminSession(object):
         if channel_password is not None:
             params.update('cpw', channel_password)
 
-        return self.ts.command('clientmove', params)
+        return self.ts.command('clientmove', **params)
 
     def client_edit(self, client_id, **kwargs):
 
         params = {'clid': client_id}
         params.update(kwargs)
-        return self.ts.command('clientedit', params)
+        return self.ts.command('clientedit', **params)
 
     def client_find(self, pattern):
         return self.ts.command('clientfind', {'pattern': pattern})
 
-    def client_list(self):
+    def client_dblist(self):
         return self.ts.command('clientdblist')
 
     def client_get_ids(self, client_uid):
@@ -274,7 +294,7 @@ class AdminSession(object):
         params = {'reasonid': str(kickout), 'reasonmsg': str(reason),
                   'clid': str(clients_id)}
 
-        return self.ts.command('clientkick', params)
+        return self.ts.command('clientkick', **params)
 
     def client_poke(self, client_id, msg):
         raise NotImplementedError
