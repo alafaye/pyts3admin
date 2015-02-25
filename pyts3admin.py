@@ -127,8 +127,10 @@ class AdminSession(object):
         client_id : int
         time : int
         reason : string
+
         """
-        params = {'clid': str(client_id), 'time': str(time), 'banreason': reason}
+        params = {'clid': str(client_id), 'time': str(time),
+                  'banreason': reason}
         return self.ts.command('banclient', params)
 
     # Chan part
@@ -140,6 +142,7 @@ class AdminSession(object):
         Parameters
         ----------
         chan_name : string
+
         """
 
         if chan_name is None:
@@ -157,6 +160,7 @@ class AdminSession(object):
         ----------
         chan_name : string
         force : bool
+
         """
 
         if force:
@@ -183,7 +187,9 @@ class AdminSession(object):
         return self.ts.command('channelfind', pattern=pattern)
 
     def choose_virtual_server(self, server_id):
-        raise NotImplementedError
+        cmd = 'use ' + str(server_id)
+        print(cmd)
+        return self.ts.command(cmd)
 
     def stop_server(self):
         raise NotImplementedError
@@ -222,6 +228,9 @@ class AdminSession(object):
     def client_find(self, pattern):
         return self.ts.command('clientfind', {'pattern': pattern})
 
+    def client_list(self):
+        return self.ts.command('clientdblist')
+
     def client_get_ids(self, client_uid):
         return self.ts.command('clientgetids', {'cluid': client_uid})
 
@@ -241,6 +250,7 @@ class AdminSession(object):
                 ip
             All those must be passed as strings
             e.g. : ts.client_list('uid', 'ip')
+
         """
         return self.ts.command('clientlist', *args)
 
