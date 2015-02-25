@@ -1,14 +1,6 @@
 import pyts3
 
 
-def check_command_status(status):
-
-    if status == 'error id=0 msg=ok':
-        return 0
-    else:
-        return 1
-
-
 class Client(object):
 
     def __init__(self, ts, name=None, clid=None, dbid=None, cluid=None):
@@ -24,32 +16,31 @@ class Client(object):
             self.cluid = cluid
 
 
-class ClientList(object):
-
-    def __init__(self):
-        raise NotImplementedError
-
-
-class Channel(object):
-
-    def __init__(self):
-        raise NotImplementedError
-
-
-class ChannelList(Channel):
-
-    def __init__(self):
-        raise NotImplementedError
-
-
 class AdminSession(object):
+    r"""
+    Defines an admin session on the target server
 
-    def __init__(self, verbosity=0, ip='localhost', port='10011',
+    Parameters
+    ----------
+    verbosity : int
+        verbosity of the output 0 for low, 1 for high
+    ip : string
+        ip of target server, can also be an hostname
+    port : int
+        port of the target server to query
+    admin_login : string
+        login username of an server admin
+    password : string
+        password of the admin user
+
+    """
+
+    def __init__(self, verbosity=0, ip='localhost', port=10011,
                  admin_login='serveradmin', password=None):
 
         self.admin_login = admin_login
         self.ip = ip
-        self.port = port
+        self.port = str(port)
 
         ts = pyts3.PyTS3.ServerQuery(ip=ip, query=port)
 
@@ -73,6 +64,24 @@ class AdminSession(object):
     # Ban part
 
     def ban_list(self):
+        r"""
+        Returns the ban list of the choosen server
+
+        Returns
+        -------
+        out : list of dictionnaries
+            The dictionnary fields are:
+                bannid : int
+                created : int
+                duration : int
+                enforcements : int
+                invokercldbid : int
+                invokername : unicode
+                invokeruid : unicode
+                name : unicode
+                reason : unicode
+
+        """
         return self.ts.command('banlist')
 
     def ban_add_rule(self, ip=None, name=None, client_UID=None,
