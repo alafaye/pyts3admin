@@ -143,7 +143,7 @@ class AdminSession(object):
 
     # Chan part
 
-    def channel_create(self, chan_name=None, permanent=False, **kwargs):
+    def channel_create(self, chan_name=None, permanent=True, **kwargs):
         r"""
         Method to create channels
 
@@ -192,6 +192,13 @@ class AdminSession(object):
             target channel id
         kwargs : dict
             fields to edit
+
+        Notes
+        -----
+        All the fields for channels are disposible in the telnet api
+        documentation:
+        http://media.teamspeak.com/ts3_literature/TeamSpeak%203%20Server%20Query%20Manual.pdf
+        p.44
         """
 
         params = {'cid': str(channel_id)}
@@ -230,7 +237,8 @@ class AdminSession(object):
 
         """
 
-        params = {'cid': str(channel_id), 'cpid': str(parent_channel_id), 'order': order}
+        params = {'cid': str(channel_id), 'cpid': str(parent_channel_id),
+                  'order': order}
         return self.ts.command('channelmove', **params)
 
     def channel_find(self, pattern):
@@ -243,6 +251,40 @@ class AdminSession(object):
         """
 
         return self.ts.command('channelfind', pattern=pattern)
+
+    def deploy_chans(self, yaml_file):
+        r"""
+        To deploy chans from a yaml file
+
+        Parameter
+        ---------
+        yaml_file : str
+            path to the yaml file
+
+        Notes
+        -----
+        The yaml file should be structured this way:
+
+        chan1:
+        chan2:
+            channel_password: changeme
+            channel_description: This chan is awesome!
+        chan3:
+
+        The fields are the same than those found on the channel_edit doc
+        """
+
+        try:
+            import yaml
+        except ImportError:
+            raise ImportError('The PyYaml module is needed to use this method')
+        yf = open(yaml_file, 'r')
+        ydict = yaml.load(yf)
+        for chan in ydict:
+            if ydict[chan]:
+                self.channel_create(chan, **ydict[chan])
+            else:
+                self.channel_create(chan)
 
     def choose_virtual_server(self, server_id):
         r"""
@@ -292,6 +334,13 @@ class AdminSession(object):
         ----------
         client_id : int
         kwargs : dict
+            fields to edit
+        Notes
+        -----
+        All the fields for channels are disposible in the telnet api
+        documentation:
+        http://media.teamspeak.com/ts3_literature/TeamSpeak%203%20Server%20Query%20Manual.pdf
+        p.45
         """
 
         params = {'clid': str(client_id)}
