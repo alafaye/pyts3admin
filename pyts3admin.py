@@ -1,21 +1,6 @@
 import pyts3
 
 
-class Client(object):
-
-    def __init__(self, ts, name=None, clid=None, dbid=None, cluid=None):
-
-        self.ts = ts
-        if name:
-            self.name = name
-        if clid:
-            self.clid = clid
-        if dbid:
-            self.dbid = dbid
-        if cluid:
-            self.cluid = cluid
-
-
 class AdminSession(object):
     r"""
     Defines an admin session on the target server
@@ -59,6 +44,9 @@ class AdminSession(object):
     def __del__(self):
         if self.ts.connect():
             self.ts.disconnect()
+
+    def reconnect(self):
+        self.ts.connect()
 
     # Ban part
 
