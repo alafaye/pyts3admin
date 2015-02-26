@@ -44,7 +44,6 @@ class AdminSession(object):
 
         ts = pyts3.PyTS3.ServerQuery(ip=ip, query=port)
 
-        ts.connect()
         if ts.connect():
             print("Connected to the server")
         else:
@@ -184,8 +183,18 @@ class AdminSession(object):
         return self.ts.command('channeldelete', **params)
 
     def channel_edit(self, channel_id, **kwargs):
+        r"""
+        To edit channel designed by the channel id
 
-        params = {'cid': channel_id}
+        Parameters
+        ----------
+        channel_id : int
+            target channel id
+        kwargs : dict
+            fields to edit
+        """
+
+        params = {'cid': str(channel_id)}
         params.update(kwargs)
         return self.ts.command('channeledit', kwargs)
 
@@ -208,15 +217,42 @@ class AdminSession(object):
         return self.ts.command('channellist', *args)
 
     def channel_move(self, channel_id, parent_channel_id, order=0):
+        r"""
+        Moves a channel under another
 
-        params = {'cid': channel_id, 'cpid': parent_channel_id, 'order': order}
+        Parameters
+        ----------
+        channel_id : int
+        parent_channel_id : int
+        order : int
+            Indicates the new position under the parent channel
+            e.g. 0=first, 1=second etc...
+
+        """
+
+        params = {'cid': str(channel_id), 'cpid': str(parent_channel_id), 'order': order}
         return self.ts.command('channelmove', **params)
 
     def channel_find(self, pattern):
+        r"""
+        Find a channel following a name pattern
+
+        Parameter
+        ---------
+        pattern : string
+        """
 
         return self.ts.command('channelfind', pattern=pattern)
 
     def choose_virtual_server(self, server_id):
+        r"""
+        To choose a virtual server
+
+        Parameter
+        ---------
+        server_id : int
+        """
+
         cmd = 'use ' + str(server_id)
         return self.ts.command(cmd)
 
@@ -249,19 +285,48 @@ class AdminSession(object):
         return self.ts.command('clientmove', **params)
 
     def client_edit(self, client_id, **kwargs):
+        r"""
+        To edit a client properties
 
-        params = {'clid': client_id}
+        Parameters
+        ----------
+        client_id : int
+        kwargs : dict
+        """
+
+        params = {'clid': str(client_id)}
         params.update(kwargs)
         return self.ts.command('clientedit', **params)
 
     def client_find(self, pattern):
+        r"""
+        Find a client following a name pattern
+
+        Parameter
+        ---------
+        pattern : string
+        """
         return self.ts.command('clientfind', {'pattern': pattern})
 
     def client_dblist(self):
+        r"""
+        Lists clients registered in the ts3 database
+
+        Returns:
+        out : list of dicts
+            dict fields :
+                cldbid : int
+                client_created : int
+                client_lastconnected : int
+                client_lastip : unicode
+                client_nickane : unicode
+                client_totalconnections : int
+                client_unique_identifier : unicode
+        """
         return self.ts.command('clientdblist')
 
     def client_get_ids(self, client_uid):
-        return self.ts.command('clientgetids', {'cluid': client_uid})
+        return self.ts.command('clientgetids', **{'cluid': client_uid})
 
     def client_list(self, *args):
         r"""
@@ -283,14 +348,22 @@ class AdminSession(object):
         """
         return self.ts.command('clientlist', *args)
 
-    def client_db_list(self):
-        return self.ts.command('clientdblist')
-
     def client_perm_list(self, client_dbid):
         raise NotImplementedError
 
     def client_kick(self, clients_id, from_server=False,
                     reason='For reasons'):
+        r"""
+        To kick one or more clients from a channel or from the server
+
+        Parameters
+        ----------
+        clients_id : list or int
+        from_server : bool
+            To indicate wether the client should be kicked for the server
+        reason : string
+            Reason of the kick displayed to the client
+        """
 
         kickout = 4
         if from_server:
@@ -309,10 +382,34 @@ class AdminSession(object):
         raise NotImplementedError
 
     def server_list(self):
-        serverlist = self.ts.command('serverlist')
-        return serverlist
+        """
+        Returns a list of the available virtual servers
+
+        Returns
+        -------
+        out : list of dicts
+            dict fields :
+                virtualserver_autostart : int
+                virtualserver_clientsonline : int
+                virtualserver_id : int
+                virtualserver_maxclients : int
+                virtualserver_name : unicode
+                virtualserver_port : int
+                virtualserver_queryclientsonline : int
+                virtualserver_status : unicode
+                virtualserver_uptime : int
+        """
+
+        return self.ts.command('serverlist')
 
     def virtual_server_ids(self):
+        r"""
+        Returns a list if the virtualserver ids
+
+        Returns
+        -------
+        out : list
+        """
 
         ids = []
         for server in self.server_list():
@@ -327,4 +424,12 @@ class AdminSession(object):
         raise NotImplementedError
 
     def general_message(self, msg):
+        r"""
+        To send a mesage to the ts3 general chat
+
+        Parameters
+        ----------
+        msg : string
+            Message to send
+        """
         return self.ts.command('gm', msg=msg)
