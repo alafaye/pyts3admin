@@ -14,7 +14,7 @@ setup(
     author = 'Alexandre Lafaye',
     author_email = 'lafa.alexandre@gmail.com',
     url = 'https://github.com/alafaye/pyts3admin',
-    packages = ['pyts3admin'],
+    # packages = ['pyts3admin'],
     # install_requires = ['pyts3'],
     # requires = ['pyts3'],
     license = "None",
