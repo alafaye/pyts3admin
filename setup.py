@@ -10,7 +10,7 @@ setup(
     name = 'pyts3admin',
     version = '0.1.0',
     description = 'An ts3 administration tool',
-    long_description = open('README.rst').read(),
+    long_description = open('README.md').read(),
     author = 'Alexandre Lafaye',
     author_email = 'lafa.alexandre@gmail.com',
     url = 'https://github.com/alafaye/pyts3admin',
