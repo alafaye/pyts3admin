@@ -24,7 +24,7 @@ setup(
         'Topic :: Server Administration',
         'Environment :: Console',
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Developers, Admins',
         'Natural Language :: English',
         'Operating System :: OS Independant',
         'Programming Language :: Python',
